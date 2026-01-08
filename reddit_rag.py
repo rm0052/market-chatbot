@@ -51,7 +51,7 @@ class RedditRAG:
         
         # Create prompt template
         self.prompt = ChatPromptTemplate.from_template("""
-        You are a helpful assistant that answers questions about market-related Reddit posts.
+        You are a helpful assistant that answers questions about market-related Reddit posts and news.
         
         Use the following Reddit posts to answer the user's question. If the posts don't contain
         relevant information to answer the question, say so and provide general market information.
