@@ -1,7 +1,7 @@
 streamlit
 groq
 requests
-
+scrapingbee
 
 # RAG dependencies
 langchain==0.1.0
