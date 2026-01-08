@@ -6,6 +6,7 @@ from groq import Groq
 import streamlit as st
 from langchain.schema import Document
 import json
+from scrapingbee import ScrapingBeeClient
 from reddit_rag import get_reddit_rag 
 # Get RAG instance r
 rag = get_reddit_rag() 
