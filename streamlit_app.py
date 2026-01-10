@@ -17,18 +17,6 @@ rag = get_reddit_rag()
 SCRAPINGBEE_API_KEY = "U3URPLPZWZ3QHVGEEP5HTXJ95873G9L58RJ3EHS4WSYTXOZAIE71L278CF589042BBMKNXZTRY23VYPF"
 
 
-    documents.append(
-        Document(
-            page_content=response.text.strip(),
-            metadata={
-                "source": "yahoo_finance",
-                "type": "news",
-            }
-        )
-    )
-
-    return documents
-
 def scrape_bloomberg():
     client = ScrapingBeeClient(api_key=SCRAPINGBEE_API_KEY)
     urls = ["https://finance.yahoo.com/topic/latest-news/"]
