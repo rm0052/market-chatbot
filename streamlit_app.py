@@ -27,18 +27,7 @@ SUBREDDITS = ["stocks","investing","pennystocks","Options","SecurityAnalysis","D
 
 
 def fetch_recent_reddit_posts(hours=24, limit=100):
-    subreddit = reddit.subreddit("+".join(SUBREDDITS))
-    cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
-
     documents = []
-    for submission in subreddit.new(limit=limit):
-        post_time = datetime.fromtimestamp(submission.created_utc, tz=timezone.utc)
-        if post_time < cutoff:
-            continue
-        if submission.stickied or submission.over_18:
-            continue
-        content = f""" Title: {submission.title} URL: {submission.url} Content: {submission.selftext[:2000]} """       
-        documents.append( Document( page_content=content.strip(), metadata={ "source": "reddit", "subreddit": submission.subreddit.display_name, "created_utc": submission.created_utc, } ) )
     client = ScrapingBeeClient(api_key=SCRAPINGBEE_API_KEY)
     response = client.get("https://finance.yahoo.com/topic/latest-news/", params={"ai_query": "Extract all article headlines and their links — show links as absolute urls"}, )
     content = f""" Content: {response.text} """    
