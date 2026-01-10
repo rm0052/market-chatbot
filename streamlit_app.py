@@ -13,21 +13,8 @@ rag = get_reddit_rag()
 
 # --- Clients ---
 
-reddit = praw.Reddit(
-    client_id="Ly24yiY7yWoF5CboIG217w",
-    client_secret="iffbq4WIHgjEFUvsFFzAdqzbSsFYNQ",
-    username="Basic-Cry-2405",
-    password=os.getenv("REDDIT_PASSWORD"),
-    user_agent="market-copilot-reddit-agent"
-)
 
 SCRAPINGBEE_API_KEY = "U3URPLPZWZ3QHVGEEP5HTXJ95873G9L58RJ3EHS4WSYTXOZAIE71L278CF589042BBMKNXZTRY23VYPF"
-
-SUBREDDITS = ["stocks","investing","pennystocks","Options","SecurityAnalysis","DividendInvesting","cryptocurrency","cryptomarkets","Bitcoin","wallstreetbets"]
-
-
-from scrapingbee import ScrapingBeeClient
-from langchain.schema import Document
 
 def fetch_recent_reddit_posts(hours=24, limit=100):
     documents = []
