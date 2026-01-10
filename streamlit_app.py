@@ -29,7 +29,7 @@ def scrape_bloomberg():
         )
         articles += " " + response.text  # Store raw response
     content = f""" Content: {articles} """ 
-    documents.append( Document( page_content=content.strip(), metadata={ "source": "bloomberg", "created_utc": submission.created_utc, } ) )
+    documents.append( Document( page_content=content.strip(), metadata={ "source": "bloomberg", } ) )
     return documents
     
 rag.vector_store.add_documents(scrape_bloomberg())
