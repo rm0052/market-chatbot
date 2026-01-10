@@ -33,7 +33,7 @@ def scrape_bloomberg():
     client = ScrapingBeeClient(api_key=SCRAPINGBEE_API_KEY)
     urls = ["https://finance.yahoo.com/topic/latest-news/"]
     articles = ""
-
+    documents=[]
     for url in urls:
         response = client.get(
             url,
