@@ -31,7 +31,7 @@ def fetch_recent_reddit_posts(hours=24, limit=100):
     client = ScrapingBeeClient(api_key=SCRAPINGBEE_API_KEY)
     response = client.get("https://finance.yahoo.com/topic/latest-news/", params={"ai_query": "Extract all article headlines and their links — show links as absolute urls"}, )
     content = f""" Content: {response.text} """    
-    documents.append( Document( page_content=content.strip(), metadata={ "source": "bloomberg", } ) )
+    documents.append( Document( page_content=content.strip(), metadata={ "source": "yahoo_finance" } ) )
     return documents
 
 rag.vector_store.add_documents(fetch_recent_reddit_posts())
