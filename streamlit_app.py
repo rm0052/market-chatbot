@@ -17,20 +17,42 @@ rag = get_reddit_rag()
 SCRAPINGBEE_API_KEY = "U3URPLPZWZ3QHVGEEP5HTXJ95873G9L58RJ3EHS4WSYTXOZAIE71L278CF589042BBMKNXZTRY23VYPF"
 
 
+from langchain.schema import Document
+
 def scrape_bloomberg():
     client = ScrapingBeeClient(api_key=SCRAPINGBEE_API_KEY)
-    urls = ["https://finance.yahoo.com/topic/latest-news/"]
-    articles = ""
-    documents=[]
-    for url in urls:
-        response = client.get(
-            url,
-            params={"ai_query": "Extract all article headlines and their links — show links as absolute urls"},
-        )
-        articles += " " + response.text  # Store raw response
-    content = f""" Content: {articles} """ 
-    documents.append( Document( page_content=content.strip(), metadata={ "source": "bloomberg", } ) )
+    url = "https://finance.yahoo.com/topic/latest-news/"
+
+    response = client.get(
+        url,
+        params={
+            "render_js": True,
+            "ai_query": (
+                "Extract all article headlines with summaries and absolute URLs. "
+                "Return one article per line."
+            )
+        }
+    )
+
+    if response.status_code != 200:
+        raise RuntimeError(response.text)
+
+    documents = []
+
+    for line in response.text.split("\n"):
+        if line.strip():
+            documents.append(
+                Document(
+                    page_content=line.strip(),
+                    metadata={
+                        "source": "yahoo_finance",
+                        "type": "news"
+                    }
+                )
+            )
+
     return documents
+
     
 rag.vector_store.add_documents(scrape_bloomberg())
 
