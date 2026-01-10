@@ -28,7 +28,8 @@ def scrape_bloomberg():
             params={"ai_query": "Extract all article headlines and their links — show links as absolute urls"},
         )
         articles += " " + response.text  # Store raw response
-    documents.append( Document( page_content=articles.strip(), metadata={ "source": "bloomberg", } ) )
+    content = f""" Content: {articles} """ 
+    documents.append( Document( page_content=content.strip(), metadata={ "source": "bloomberg", "created_utc": submission.created_utc, } ) )
     return documents
     
 rag.vector_store.add_documents(scrape_bloomberg())
