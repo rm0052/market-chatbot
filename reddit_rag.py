@@ -51,14 +51,14 @@ class RedditRAG:
         
         # Create prompt template
         self.prompt = ChatPromptTemplate.from_template("""
-        You are a helpful assistant that answers questions about market-related Reddit posts and news.
+        You are a helpful assistant that answers questions about market-related news.
         
-        Use the following Reddit posts to answer the user's question. If the posts don't contain
+        Use the following news headlines and url's to answer the user's question. If the news don't contain
         relevant information to answer the question, say so and provide general market information.
         
-        For each post you reference, include the subreddit name and a brief summary of the post.
+        For each post you reference, include the news headline and a brief summary of the post.
         
-        Reddit Posts:
+        Yahoo Finance News:
         {context}
         
         User Question: {question}
