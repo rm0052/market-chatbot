@@ -26,12 +26,38 @@ SCRAPINGBEE_API_KEY = "U3URPLPZWZ3QHVGEEP5HTXJ95873G9L58RJ3EHS4WSYTXOZAIE71L278C
 SUBREDDITS = ["stocks","investing","pennystocks","Options","SecurityAnalysis","DividendInvesting","cryptocurrency","cryptomarkets","Bitcoin","wallstreetbets"]
 
 
+from scrapingbee import ScrapingBeeClient
+from langchain.schema import Document
+
 def fetch_recent_reddit_posts(hours=24, limit=100):
     documents = []
+
     client = ScrapingBeeClient(api_key=SCRAPINGBEE_API_KEY)
-    response = client.get("https://finance.yahoo.com/topic/latest-news/", params={"ai_query": "Extract all article headlines and their links — show links as absolute urls"}, )
-    content = f""" Content: {response.text} """    
-    documents.append( Document( page_content=content.strip(), metadata={ "source": "yahoo_finance" } ) )
+
+    response = client.get(
+        "https://finance.yahoo.com/topic/latest-news/",
+        params={
+            "render_js": True,
+            "ai_query": (
+                "Extract all article headlines with their publication time and absolute URLs. "
+                "Return as plain text, one article per line."
+            )
+        }
+    )
+
+    if response.status_code != 200:
+        raise RuntimeError(f"ScrapingBee failed: {response.status_code} - {response.text}")
+
+    documents.append(
+        Document(
+            page_content=response.text.strip(),
+            metadata={
+                "source": "yahoo_finance",
+                "type": "news",
+            }
+        )
+    )
+
     return documents
 
 rag.vector_store.add_documents(fetch_recent_reddit_posts())
