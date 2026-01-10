@@ -16,24 +16,6 @@ rag = get_reddit_rag()
 
 SCRAPINGBEE_API_KEY = "U3URPLPZWZ3QHVGEEP5HTXJ95873G9L58RJ3EHS4WSYTXOZAIE71L278CF589042BBMKNXZTRY23VYPF"
 
-def fetch_recent_reddit_posts(hours=24, limit=100):
-    documents = []
-
-    client = ScrapingBeeClient(api_key=SCRAPINGBEE_API_KEY)
-
-    response = client.get(
-        "https://finance.yahoo.com/topic/latest-news/",
-        params={
-            "render_js": True,
-            "ai_query": (
-                "Extract all article headlines with their publication time and absolute URLs. "
-                "Return as plain text, one article per line."
-            )
-        }
-    )
-
-    if response.status_code != 200:
-        raise RuntimeError(f"ScrapingBee failed: {response.status_code} - {response.text}")
 
     documents.append(
         Document(
@@ -47,6 +29,20 @@ def fetch_recent_reddit_posts(hours=24, limit=100):
 
     return documents
 
+def scrape_bloomberg():
+    client = ScrapingBeeClient(api_key=SCRAPINGBEE_API_KEY)
+    urls = ["https://finance.yahoo.com/topic/latest-news/"]
+    articles = ""
+
+    for url in urls:
+        response = client.get(
+            url,
+            params={"ai_query": "Extract all article headlines and their links — show links as absolute urls"},
+        )
+        articles += " " + response.text  # Store raw response
+    documents.append( Document( page_content=articles.strip(), metadata={ "source": "bloomberg", } ) )
+    return documents
+    
 rag.vector_store.add_documents(fetch_recent_reddit_posts())
 
     
