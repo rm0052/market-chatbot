@@ -1,4 +1,5 @@
 import os
+import sys
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.schema import Document
@@ -7,10 +8,24 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 
+# Try to load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    print("Environment variables loaded from .env file")
+except ImportError:
+    print("python-dotenv not installed. Using environment variables directly.")
+except Exception as e:
+    print(f"Error loading .env file: {str(e)}")
 
 # Vector DB configuration
 VECTOR_DB_PATH = os.getenv("VECTOR_DB_PATH", "./vector_db")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+# Validate required API key
+if not GROQ_API_KEY:
+    print("WARNING: GROQ_API_KEY environment variable not set.")
+    print("Please set it in your .env file or environment variables.")
 
 class RedditRAG:
     def __init__(self):
@@ -36,12 +51,19 @@ class RedditRAG:
             self.vector_store.save_local(VECTOR_DB_PATH)
         
         # Initialize LLM
-        self.llm = ChatGroq(
-            api_key=GROQ_API_KEY,
-            model="llama-3.1-8b-instant",
-            temperature=0.3,
-            max_tokens=1024
-        )
+        try:
+            self.llm = ChatGroq(
+                api_key=GROQ_API_KEY,
+                model="llama-3.1-8b-instant",
+                temperature=0.3,
+                max_tokens=1024
+            )
+            print("Successfully initialized Groq LLM")
+        except Exception as e:
+            print(f"Error initializing Groq LLM: {e}")
+            print("This may be due to an invalid API key or connection issues.")
+            # Continue without raising to allow the application to start,
+            # but it will fail when trying to use the LLM
         
         # Create retriever
         self.retriever = self.vector_store.as_retriever(
@@ -53,15 +75,18 @@ class RedditRAG:
         self.prompt = ChatPromptTemplate.from_template("""
         You are a helpful assistant that answers questions about market-related news.
         
-        Use the following news headlines and url's to answer the user's question. If the news don't contain
+        Use the following news headlines and summaries to answer the user's question. If the news doesn't contain
         relevant information to answer the question, say so and provide general market information.
         
-        For each post you reference, include the news headline and a brief summary of the post.
+        For each article you reference, include the news headline and a brief summary.
         
-        Yahoo Finance News:
+        News Articles:
         {context}
         
         User Question: {question}
+        
+        Important: Always provide a detailed and informative answer based on the provided news articles.
+        If you don't have enough information, clearly state that and provide general knowledge about the topic.
         """)
         
         # Create document chain
@@ -125,20 +150,54 @@ class RedditRAG:
             for doc in source_docs:
                 # Check if it's a Document object
                 if hasattr(doc, "metadata") and hasattr(doc, "page_content"):
-                    if "source" in doc.metadata and doc.metadata["source"] == "reddit":
-                        # Extract title from page_content
-                        title = doc.page_content
-                        if "\n\n" in doc.page_content:
-                            title = doc.page_content.split("\n\n")[0]
-                        if "Title: " in title:
-                            title = title.replace("Title: ", "")
+                    # Extract source information based on metadata source type
+                    if "source" in doc.metadata:
+                        if doc.metadata["source"] == "reddit":
+                            # Extract title from page_content for Reddit sources
+                            title = doc.page_content
+                            if "\n\n" in doc.page_content:
+                                title = doc.page_content.split("\n\n")[0]
+                            if "Title: " in title:
+                                title = title.replace("Title: ", "")
+                            
+                            source = {
+                                "subreddit": doc.metadata.get("subreddit", "unknown"),
+                                "title": title,
+                                "url": doc.metadata.get("url", ""),
+                                "author": doc.metadata.get("author", "unknown"),
+                                "created_utc": doc.metadata.get("created_utc", 0)
+                            }
+                            result["sources"].append(source)
                         
+                        elif doc.metadata["source"] == "yahoo_finance":
+                            # Extract information from Yahoo Finance sources
+                            # The page_content should contain headline, summary, and URL
+                            content = doc.page_content
+                            
+                            # Try to extract title and URL if possible
+                            title = content
+                            url = ""
+                            
+                            # If the content contains a URL, extract it
+                            if "http" in content:
+                                parts = content.split("http")
+                                if len(parts) > 1:
+                                    title = parts[0].strip()
+                                    url = "http" + parts[1].strip()
+                            
+                            source = {
+                                "title": title,
+                                "url": url,
+                                "type": "news",
+                                "source": "Yahoo Finance"
+                            }
+                            result["sources"].append(source)
+                    else:
+                        # Generic handling for documents without a specific source type
                         source = {
-                            "subreddit": doc.metadata.get("subreddit", "unknown"),
-                            "title": title,
-                            "url": doc.metadata.get("url", ""),
-                            "author": doc.metadata.get("author", "unknown"),
-                            "created_utc": doc.metadata.get("created_utc", 0)
+                            "title": doc.page_content[:100] + "..." if len(doc.page_content) > 100 else doc.page_content,
+                            "content": doc.page_content,
+                            "metadata": doc.metadata
                         }
                         result["sources"].append(source)
         
