@@ -31,7 +31,7 @@ def scrape_bloomberg():
     documents.append( Document( page_content=articles.strip(), metadata={ "source": "bloomberg", } ) )
     return documents
     
-rag.vector_store.add_documents(fetch_recent_reddit_posts())
+rag.vector_store.add_documents(scrape_bloomberg())
 
     
 def market_copilot(query):
