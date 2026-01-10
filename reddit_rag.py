@@ -8,15 +8,6 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 
-# Try to load environment variables from .env file
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-    print("Environment variables loaded from .env file")
-except ImportError:
-    print("python-dotenv not installed. Using environment variables directly.")
-except Exception as e:
-    print(f"Error loading .env file: {str(e)}")
 
 # Vector DB configuration
 VECTOR_DB_PATH = os.getenv("VECTOR_DB_PATH", "./vector_db")
