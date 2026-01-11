@@ -9,7 +9,7 @@ langchain-groq==0.0.1
 faiss-cpu
 praw
 
-torch==2.1.2
+torch
 transformers
 sentence-transformers
 langchain-community==0.0.20
