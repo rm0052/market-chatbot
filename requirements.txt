@@ -5,9 +5,12 @@ scrapingbee
 
 # RAG dependencies
 langchain==0.1.0
-langchain-community==0.0.13
 langchain-groq==0.0.1
-sentence-transformers
 faiss-cpu
 praw
 
+torch==2.1.2
+transformers==4.36.2
+sentence-transformers==2.2.2
+langchain-community==0.0.20
+accelerate==0.25.0
