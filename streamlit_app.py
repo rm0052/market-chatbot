@@ -38,19 +38,21 @@ def scrape_bloomberg():
         raise RuntimeError(response.text)
 
     documents = []
-
+    seen=set()
     for line in response.text.split("\n"):
-        if line.strip():
-            documents.append(
-                Document(
-                    page_content=line.strip(),
-                    metadata={
-                        "source": "yahoo_finance",
-                        "type": "news"
-                    }
-                )
-            )
-    documents=set(documents)
+    line = line.strip()
+    if not line or line in seen:
+        continue
+    seen.add(line)
+    documents.append(
+        Document(
+            page_content=line,
+            metadata={
+                "source": "yahoo_finance",
+                "type": "news"
+            }
+        )
+    )
     return documents
 
     
