@@ -50,7 +50,7 @@ def scrape_bloomberg():
                     }
                 )
             )
-
+    documents=set(documents)
     return documents
 
     
