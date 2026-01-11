@@ -40,7 +40,7 @@ def scrape_bloomberg():
     documents = []
     seen=set()
     for line in response.text.split("\n"):
-    line = line.strip()
+        line=line.strip()
     if not line or line in seen:
         continue
     seen.add(line)
