@@ -43,16 +43,17 @@ def scrape_bloomberg():
         line=line.strip()
         if not line or line in seen:
             continue
-        seen.add(line)
-        documents.append(
-            Document(
-                page_content=line,
-                metadata={
-                    "source": "yahoo_finance",
-                    "type": "news"
-                }
+        if line:
+            seen.add(line)
+            documents.append(
+                Document(
+                    page_content=line,
+                    metadata={
+                        "source": "yahoo_finance",
+                        "type": "news"
+                    }
+                )
             )
-        )
     return documents
 
     
