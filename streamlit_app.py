@@ -42,7 +42,7 @@ def scrape_bloomberg():
         if line.strip():
             documents.append(
                 Document(
-                    page_content=line,
+                    page_content=line.strip(),
                     metadata={
                         "source": "yahoo_finance",
                         "type": "news"
