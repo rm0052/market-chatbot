@@ -122,7 +122,7 @@ class RedditRAG:
         
         # Format response
         result = {
-            "answer": response.get("answer", "No answer found"),
+            "answer": response.get("result", "No answer found"),
             "sources": []
         }
         
@@ -142,25 +142,8 @@ class RedditRAG:
                 # Check if it's a Document object
                 if hasattr(doc, "metadata") and hasattr(doc, "page_content"):
                     # Extract source information based on metadata source type
-                    if "source" in doc.metadata:
-                        if doc.metadata["source"] == "reddit":
-                            # Extract title from page_content for Reddit sources
-                            title = doc.page_content
-                            if "\n\n" in doc.page_content:
-                                title = doc.page_content.split("\n\n")[0]
-                            if "Title: " in title:
-                                title = title.replace("Title: ", "")
-                            
-                            source = {
-                                "subreddit": doc.metadata.get("subreddit", "unknown"),
-                                "title": title,
-                                "url": doc.metadata.get("url", ""),
-                                "author": doc.metadata.get("author", "unknown"),
-                                "created_utc": doc.metadata.get("created_utc", 0)
-                            }
-                            result["sources"].append(source)
-                        
-                        elif doc.metadata["source"] == "yahoo_finance":
+                    if "source" in doc.metadata:                        
+                        if doc.metadata["source"] == "yahoo_finance":
                             # Extract information from Yahoo Finance sources
                             # The page_content should contain headline, summary, and URL
                             content = doc.page_content
