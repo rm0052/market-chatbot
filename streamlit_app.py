@@ -38,8 +38,12 @@ def scrape_bloomberg():
         raise RuntimeError(response.text)
 
     documents = []
+    seen=set()
     for line in response.text.split("\n"):
+        if not line or line in seen: 
+            continue
         if line.strip():
+            seen.add(line.strip)
             documents.append(
                 Document(
                     page_content=line.strip(),
