@@ -8,6 +8,6 @@ langchain-core
 langchain-groq==0.0.1
 faiss-cpu
 praw
-
+langchain==0.1.0
 sentence-transformers
 langchain-community==0.0.20
