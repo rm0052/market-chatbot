@@ -2,7 +2,7 @@ import os
 import json
 from datetime import datetime, timedelta, timezone
 import streamlit as st
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 from scrapingbee import ScrapingBeeClient
 from reddit_rag import get_reddit_rag
 
