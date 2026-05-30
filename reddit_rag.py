@@ -7,6 +7,7 @@ from langchain_groq import ChatGroq
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
+from torchvision.transforms.v2 import functional as tvF
 
 
 # Vector DB configuration
