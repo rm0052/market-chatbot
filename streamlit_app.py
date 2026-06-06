@@ -27,7 +27,7 @@ def scrape_bloomberg():
         url,
         params={
             "render_js": True,
-            "wait": 5000,  # wait 5 seconds
+            "block_resources": False,
             "ai_query": (
                 "Extract all article headlines with summaries and absolute URLs. "
                 "Return one article per line."
